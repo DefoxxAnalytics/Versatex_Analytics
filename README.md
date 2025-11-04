@@ -297,10 +297,18 @@ docker-compose up -d --build frontend
 
 ## 📖 Documentation
 
+### Essential Guides
+- [Quick Start Guide](docs/setup/QUICK_START_GUIDE.md) - Fast setup for development
+- [Windows Setup](docs/setup/WINDOWS-SETUP.md) - Windows-specific instructions
+- [Docker Troubleshooting](docs/setup/DOCKER-TROUBLESHOOTING.md) - Common issues and solutions
+- [Development Guide](docs/development/CLAUDE.md) - AI assistant guidelines for this codebase
+
+### Interactive Documentation
 - [API Documentation](http://localhost:8001/api/docs) - Interactive API docs
 - [Django Admin](http://localhost:8001/admin) - Custom branded admin interface
-- [Frontend Integration Guide](docs/FRONTEND-INTEGRATION.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
+
+### More Documentation
+See the [docs/](docs/) directory for all documentation organized by category.
 
 ## 🎨 Customizations
 
