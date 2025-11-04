@@ -127,6 +127,13 @@ railway link
    PYTHONUNBUFFERED=1
    ```
 
+   **Generate SECRET_KEY:**
+   ```bash
+   # Works without Django installed
+   python -c "import secrets, string; chars = string.ascii_letters + string.digits + '@#$%^&*()_+-='; print(''.join(secrets.choice(chars) for _ in range(50)))"
+   ```
+   Or use: https://djecrety.ir/
+
 3. **Set Custom Start Command** (in Settings → Deploy):
    ```bash
    gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --timeout 120

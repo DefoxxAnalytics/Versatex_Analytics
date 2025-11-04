@@ -237,9 +237,23 @@ X_FRAME_OPTIONS=DENY
 
 - **SECRET_KEY**: Generate a new one! Use this command locally:
   ```bash
-  python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+  # Works without Django installed
+  python -c "import secrets, string; chars = string.ascii_letters + string.digits + '@#$%^&*()_+-='; print(''.join(secrets.choice(chars) for _ in range(50)))"
   ```
-  Or use an online generator: https://djecrety.ir/
+
+  **Alternative methods:**
+  - If you have Django installed in your backend:
+    ```bash
+    python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+    ```
+  - Online generator: https://djecrety.ir/
+
+  **Example output:**
+  ```
+  NsXGImqZJKDxxlh%4KFASjMlHMycR@-xobMtLb&=zx7IJcI34e
+  ```
+
+  ⚠️ **NEVER commit this key to git!** Railway stores it securely as an environment variable.
 
 - **${{service.VARIABLE}}**: This syntax tells Railway to reference another service's variable
   - Railway will automatically substitute the correct values
