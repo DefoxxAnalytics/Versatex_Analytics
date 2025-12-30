@@ -7,6 +7,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+# Set admin site URL to frontend
+admin.site.site_url = settings.FRONTEND_URL
+
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),

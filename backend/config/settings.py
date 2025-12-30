@@ -206,3 +206,6 @@ if not DEBUG:
 
 # Admin Site Configuration
 LOGOUT_REDIRECT_URL = '/admin/login/'
+
+# Frontend URL for "View Site" link in admin
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
