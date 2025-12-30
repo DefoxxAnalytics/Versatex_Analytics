@@ -143,22 +143,44 @@ Legacy endpoints (`/api/auth/`, `/api/procurement/`, `/api/analytics/`) are supp
 
 ## Environment Variables
 
-### Root `.env` (for Docker)
+Copy `.env.example` to `.env` and configure:
 
 ```env
-DB_NAME=analytics_db
-DB_USER=analytics_user
+# Required
+SECRET_KEY=your-django-secret-key  # Generate with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+DEBUG=True  # Set to False in production
 DB_PASSWORD=your_password
-SECRET_KEY=your-django-secret-key
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-```
 
-### Frontend `.env` (in frontend/)
-
-```env
+# Frontend
 VITE_API_URL=http://127.0.0.1:8001/api
 ```
+
+See `.env.example` for the full list of configuration options and the production security checklist.
+
+## Security Features
+
+### Rate Limiting
+- Uploads: 10/hour per user
+- Exports: 30/hour per user
+- Bulk deletes: 10/hour per user
+- Login attempts: 5/minute
+- Anonymous: 100/hour
+- Authenticated: 1000/hour
+
+### Production Deployment
+
+Use the production Docker Compose override for enhanced security:
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+Production features:
+- No external ports for DB/Redis (internal network only)
+- Redis authentication enabled
+- DEBUG=False enforced
+- HTTPS-only CORS origins
+- Resource limits on containers
 
 ## Database Schema Notes
 
@@ -191,3 +213,11 @@ docker-compose exec backend python manage.py shell
 **Static files missing in admin:** Run `collectstatic` command.
 
 **Port 8001 in use:** Check for WSL relay processes; can change in docker-compose.yml.
+
+## CI/CD
+
+GitHub Actions workflow runs on push/PR to master:
+- Backend: Python linting, Django tests
+- Frontend: TypeScript check, Vitest tests, build verification
+
+Badge: [![CI](https://github.com/DefoxxAnalytics/Versatex_Analytics/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DefoxxAnalytics/Versatex_Analytics/actions/workflows/ci.yml)
