@@ -16,7 +16,22 @@
       "Bash(powershell \"Invoke-WebRequest -Uri ''http://localhost:8001/admin/'' -UseBasicParsing -TimeoutSec 5 | Select-Object StatusCode\")",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git mv:*)",
+      "Bash(dir:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Bash(git remote:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh auth:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(docker builder prune:*)"
     ],
     "deny": [],
     "ask": []

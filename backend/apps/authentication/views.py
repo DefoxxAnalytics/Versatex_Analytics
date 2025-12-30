@@ -6,10 +6,11 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 from .models import Organization, UserProfile, AuditLog
 from .serializers import (
     RegisterSerializer, LoginSerializer, UserSerializer,
@@ -17,10 +18,13 @@ from .serializers import (
     ChangePasswordSerializer, AuditLogSerializer
 )
 from .permissions import IsAdmin, IsManager
-from .utils import log_action
+from .utils import (
+    log_action, record_failed_login, check_login_lockout,
+    clear_failed_logins, log_security_event
+)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True), name='dispatch')
 class RegisterView(generics.CreateAPIView):
     """
     User registration endpoint
@@ -57,40 +61,66 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True), name='dispatch')
 class LoginView(generics.GenericAPIView):
     """
     User login endpoint
+    Rate limited to 5 attempts per minute per IP to prevent brute force attacks
+    Additional lockout after 5 failed attempts for 15 minutes
     """
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request):
+        # Check for IP lockout first
+        if check_login_lockout(request):
+            log_security_event('login_blocked_lockout', request)
+            return Response(
+                {'error': 'Too many failed attempts. Please try again later.'},
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        username = serializer.validated_data['username']
         user = authenticate(
-            username=serializer.validated_data['username'],
+            username=username,
             password=serializer.validated_data['password']
         )
 
         if not user:
+            # Record failed login attempt
+            is_locked, remaining = record_failed_login(request, username)
+            error_msg = 'Invalid credentials'
+            if remaining > 0:
+                error_msg += f' ({remaining} attempts remaining)'
+            elif is_locked:
+                error_msg = 'Too many failed attempts. Please try again later.'
+
+            return Response(
+                {'error': error_msg},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if not user.is_active:
+            # Don't reveal account exists but is disabled
+            record_failed_login(request, username)
             return Response(
                 {'error': 'Invalid credentials'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        if not user.is_active:
+        if not hasattr(user, 'profile') or not user.profile.is_active:
+            # Don't reveal profile status
+            record_failed_login(request, username)
             return Response(
-                {'error': 'User account is disabled'},
-                status=status.HTTP_403_FORBIDDEN
+                {'error': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED
             )
 
-        if not hasattr(user, 'profile') or not user.profile.is_active:
-            return Response(
-                {'error': 'User profile is inactive'},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Successful login - clear failed attempts
+        clear_failed_logins(request)
 
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
@@ -117,31 +147,30 @@ class LoginView(generics.GenericAPIView):
 class LogoutView(generics.GenericAPIView):
     """
     User logout endpoint
+    Blacklists the refresh token to prevent reuse
     """
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
-        try:
-            # Log action
-            log_action(
-                user=request.user,
-                action='logout',
-                resource='auth',
-                request=request
-            )
-            
-            # Blacklist the refresh token
-            refresh_token = request.data.get('refresh_token')
-            if refresh_token:
+        # Log action first
+        log_action(
+            user=request.user,
+            action='logout',
+            resource='auth',
+            request=request
+        )
+
+        # Blacklist the refresh token
+        refresh_token = request.data.get('refresh_token')
+        if refresh_token:
+            try:
                 token = RefreshToken(refresh_token)
                 token.blacklist()
-            
-            return Response({'message': 'Logout successful'})
-        except Exception as e:
-            return Response(
-                {'error': str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            except TokenError:
+                # Token is invalid or already blacklisted - still logout successfully
+                pass
+
+        return Response({'message': 'Logout successful'})
 
 
 class CurrentUserView(generics.RetrieveUpdateAPIView):

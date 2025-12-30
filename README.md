@@ -1,48 +1,76 @@
-# Analytics Dashboard - Full Stack Application
+# Versatex Analytics
 
-Complete procurement analytics dashboard with Django backend, React frontend, and organization-based multi-tenancy.
+[![CI](https://github.com/DefoxxAnalytics/Versatex_Analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/DefoxxAnalytics/Versatex_Analytics/actions/workflows/ci.yml)
+[![Deploy](https://github.com/DefoxxAnalytics/Versatex_Analytics/actions/workflows/deploy.yml/badge.svg)](https://github.com/DefoxxAnalytics/Versatex_Analytics/actions/workflows/deploy.yml)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/downloads/release/python-311/)
+[![Django 5.0](https://img.shields.io/badge/Django-5.0-green.svg)](https://docs.djangoproject.com/en/5.0/)
+[![React 18](https://img.shields.io/badge/React-18-61dafb.svg)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178c6.svg)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38bdf8.svg)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ed.svg)](https://www.docker.com/)
+[![Railway](https://img.shields.io/badge/Railway-Deployable-0B0D0E.svg)](https://railway.app/)
 
-## 🏗️ Architecture
+> Enterprise-grade procurement analytics platform with organization-based multi-tenancy, real-time insights, and comprehensive spend analysis.
 
-- **Backend**: Django 5.0 + Django REST Framework + PostgreSQL
-- **Frontend**: React 19 + TypeScript + Tailwind CSS
-- **Authentication**: JWT tokens with role-based access control
-- **Database**: PostgreSQL with organization isolation
-- **Task Queue**: Celery + Redis for background jobs
-- **Deployment**: Docker + Docker Compose
+---
 
-## 🎯 Features
+## Overview
+
+Versatex Analytics is a full-stack procurement analytics dashboard designed for organizations to gain actionable insights from their spending data. Built with modern technologies and security best practices, it provides powerful analytics capabilities while maintaining data isolation across multiple tenants.
+
+## Architecture
+
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Django 5.0 + Django REST Framework + PostgreSQL |
+| **Frontend** | React 18 + TypeScript + Tailwind CSS 4 + Vite |
+| **Authentication** | JWT tokens with role-based access control |
+| **Database** | PostgreSQL with organization isolation |
+| **Task Queue** | Celery + Redis for background jobs |
+| **Deployment** | Docker + Docker Compose / Railway |
+
+## Features
 
 ### Authentication & Authorization
-- ✅ User registration and login
-- ✅ JWT token authentication with refresh
-- ✅ Organization-based multi-tenancy
-- ✅ 3 roles: Admin, Manager, Viewer
-- ✅ Role-based permissions
-- ✅ Audit logging
-- ✅ Custom branded admin panel (Navy blue theme with Versatex branding)
-- ✅ Admin-only features (Django Admin Panel access via Shield icon)
+- User registration and login with JWT token authentication
+- Organization-based multi-tenancy with complete data isolation
+- Role-based permissions (Admin, Manager, Viewer)
+- Audit logging for compliance and security
+- Custom branded admin panel with Versatex theming
 
 ### Data Management
-- ✅ CSV upload with duplicate detection
-- ✅ Bulk delete transactions
-- ✅ Export to CSV
-- ✅ Supplier and category management
-- ✅ Transaction CRUD operations
-- ✅ Upload history tracking
+- CSV upload with intelligent duplicate detection
+- Bulk operations (delete, export)
+- Supplier and category management
+- Transaction CRUD operations with validation
+- Upload history tracking with batch management
 
-### Analytics
-- ✅ Overview statistics
-- ✅ Spend by category and supplier
-- ✅ Monthly trend analysis
-- ✅ Pareto analysis (80/20 rule)
-- ✅ Tail spend identification
-- ✅ Spend stratification (Kraljic Matrix)
-- ✅ Seasonality patterns
-- ✅ Year-over-year comparison
-- ✅ Supplier consolidation opportunities
+### Analytics Suite
+| Analysis Type | Description |
+|--------------|-------------|
+| **Overview** | Key metrics and statistics at a glance |
+| **Spend by Category/Supplier** | Breakdown of spending patterns |
+| **Monthly Trends** | Time-series analysis of procurement |
+| **Pareto Analysis** | 80/20 rule identification |
+| **Tail Spend** | Low-value transaction identification |
+| **Spend Stratification** | Kraljic Matrix classification |
+| **Seasonality** | Pattern detection across periods |
+| **Year-over-Year** | Comparative analysis |
+| **Consolidation** | Supplier optimization opportunities |
 
-## 🚀 Quick Start
+### Security Features
+- Argon2 password hashing
+- JWT token authentication with refresh
+- CORS protection with strict origin validation
+- SQL injection and XSS protection
+- CSRF protection
+- Rate limiting
+- HTTPS enforcement (production)
+- UUID-based resource identifiers (IDOR protection)
+- Failed login tracking with IP lockout
+
+## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
@@ -51,9 +79,8 @@ Complete procurement analytics dashboard with Django backend, React frontend, an
 ### 1. Clone and Setup
 
 ```bash
-# Extract the project
-tar -xzf analytics-dashboard-fullstack.tar.gz
-cd analytics-dashboard-fullstack
+git clone https://github.com/DefoxxAnalytics/Versatex_Analytics.git
+cd Versatex_Analytics
 
 # Copy environment variables
 cp .env.example .env
@@ -71,7 +98,7 @@ docker-compose up -d --build
 # Check logs
 docker-compose logs -f
 
-# The services will be available at:
+# Services available at:
 # - Frontend: http://localhost:3000
 # - Backend API: http://localhost:8001/api
 # - Django Admin: http://localhost:8001/admin
@@ -87,7 +114,7 @@ docker-compose exec backend python manage.py migrate
 # Create superuser
 docker-compose exec backend python manage.py createsuperuser
 
-# Create initial organization (optional)
+# Create initial organization
 docker-compose exec backend python manage.py shell
 >>> from apps.authentication.models import Organization
 >>> org = Organization.objects.create(name="My Company", slug="my-company")
@@ -96,45 +123,49 @@ docker-compose exec backend python manage.py shell
 
 ### 4. Access the Application
 
-1. **Frontend**: http://localhost:3000
-   - Login with the superuser credentials you created
-   - Admin users will see a "Admin Panel" link (with Shield icon) in the sidebar
-2. **Django Admin**: http://localhost:8001/admin
-   - Custom branded navy blue theme with Versatex logo
-   - Timezone set to EST (America/New_York)
-3. **API Documentation**: http://localhost:8001/api/docs
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost:3000 | Main application |
+| Django Admin | http://localhost:8001/admin | Administration panel |
+| API Docs | http://localhost:8001/api/docs | Interactive API documentation |
 
-## 📚 API Endpoints
+## API Reference
 
 ### Authentication
-- `POST /api/auth/register/` - Register new user
-- `POST /api/auth/login/` - Login
-- `POST /api/auth/logout/` - Logout
-- `POST /api/auth/token/refresh/` - Refresh JWT token
-- `GET /api/auth/user/` - Get current user
-- `POST /api/auth/change-password/` - Change password
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/auth/register/` | POST | Register new user |
+| `/api/v1/auth/login/` | POST | Login |
+| `/api/v1/auth/logout/` | POST | Logout |
+| `/api/v1/auth/token/refresh/` | POST | Refresh JWT token |
+| `/api/v1/auth/user/` | GET | Get current user |
+| `/api/v1/auth/change-password/` | POST | Change password |
 
 ### Procurement
-- `GET /api/procurement/suppliers/` - List suppliers
-- `GET /api/procurement/categories/` - List categories
-- `GET /api/procurement/transactions/` - List transactions
-- `POST /api/procurement/transactions/upload_csv/` - Upload CSV
-- `POST /api/procurement/transactions/bulk_delete/` - Bulk delete
-- `GET /api/procurement/transactions/export/` - Export to CSV
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/procurement/suppliers/` | GET/POST | List/create suppliers |
+| `/api/v1/procurement/categories/` | GET/POST | List/create categories |
+| `/api/v1/procurement/transactions/` | GET/POST | List/create transactions |
+| `/api/v1/procurement/transactions/upload_csv/` | POST | Upload CSV data |
+| `/api/v1/procurement/transactions/bulk_delete/` | POST | Bulk delete |
+| `/api/v1/procurement/transactions/export/` | GET | Export to CSV |
 
 ### Analytics
-- `GET /api/analytics/overview/` - Overview statistics
-- `GET /api/analytics/spend-by-category/` - Spend by category
-- `GET /api/analytics/spend-by-supplier/` - Spend by supplier
-- `GET /api/analytics/monthly-trend/` - Monthly trend
-- `GET /api/analytics/pareto/` - Pareto analysis
-- `GET /api/analytics/tail-spend/` - Tail spend analysis
-- `GET /api/analytics/stratification/` - Spend stratification
-- `GET /api/analytics/seasonality/` - Seasonality analysis
-- `GET /api/analytics/year-over-year/` - Year over year
-- `GET /api/analytics/consolidation/` - Consolidation opportunities
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/analytics/overview/` | GET | Overview statistics |
+| `/api/v1/analytics/spend-by-category/` | GET | Spend by category |
+| `/api/v1/analytics/spend-by-supplier/` | GET | Spend by supplier |
+| `/api/v1/analytics/monthly-trend/` | GET | Monthly trend |
+| `/api/v1/analytics/pareto/` | GET | Pareto analysis |
+| `/api/v1/analytics/tail-spend/` | GET | Tail spend analysis |
+| `/api/v1/analytics/stratification/` | GET | Spend stratification |
+| `/api/v1/analytics/seasonality/` | GET | Seasonality analysis |
+| `/api/v1/analytics/year-over-year/` | GET | Year over year |
+| `/api/v1/analytics/consolidation/` | GET | Consolidation opportunities |
 
-## 🔧 Development
+## Development
 
 ### Backend Development
 
@@ -169,54 +200,54 @@ pnpm install
 # Run development server
 pnpm dev
 
+# Type checking
+pnpm check
+
 # Build for production
 pnpm build
 ```
 
-## 📊 Database Schema
+### Testing
 
-### Organizations
-- Multi-tenant architecture
-- Each organization has isolated data
+```bash
+# Backend tests
+cd backend
+python manage.py test
 
-### Users & Roles
-- **Admin**: Full access, user management, bulk delete, Django Admin Panel access
-- **Manager**: Upload data, manage own data
-- **Viewer**: Read-only access
+# Frontend tests
+cd frontend
+pnpm test        # Watch mode
+pnpm test:run    # Single run
+pnpm test:ui     # With UI
+```
 
-Note: Only users with `profile.role === 'admin'` can see and access the Django Admin Panel link in the frontend sidebar.
+## Database Schema
 
-### Procurement Data
-- **Suppliers**: Vendor information
-- **Categories**: Spend categories
-- **Transactions**: Procurement transactions
-- **DataUploads**: Upload history
+### Core Models
 
-## 🔐 Security
+| Model | Description |
+|-------|-------------|
+| **Organization** | Multi-tenant root with isolated data |
+| **User/UserProfile** | Extended Django User with org, role |
+| **Supplier** | Vendor information |
+| **Category** | Spend categories (hierarchical) |
+| **Transaction** | Procurement transactions |
+| **DataUpload** | Upload history tracking |
 
-- Argon2 password hashing
-- JWT token authentication
-- CORS protection
-- SQL injection protection
-- XSS protection
-- CSRF protection
-- Rate limiting (production)
-- HTTPS enforcement (production)
+### User Roles
 
-## 📦 Deployment
+| Role | Permissions |
+|------|-------------|
+| **Admin** | Full access, user management, bulk delete, Django Admin |
+| **Manager** | Upload data, manage own data |
+| **Viewer** | Read-only access |
 
-### Railway (Recommended for Production)
+## Deployment
 
-Railway is the recommended platform for deploying this application to production.
+### Railway (Recommended)
 
-**Why Railway?**
-- Native support for Django + Celery + Redis + PostgreSQL
-- Cost-effective: $30-50/month for production
-- Zero-config networking between services
-- Built-in CI/CD from GitHub
-- No cold starts (24/7 availability)
+Railway provides native support for the full stack with minimal configuration.
 
-**Quick Deploy:**
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -229,15 +260,13 @@ railway init
 railway up
 ```
 
-**Complete Guides**:
-- [Step-by-Step Deployment Guide](docs/deployment/RAILWAY-STEP-BY-STEP.md) - **START HERE** for first-time deployment
-- [Quick Reference Guide](docs/deployment/RAILWAY.md) - For experienced users
-
-**Cost Estimate**:
+**Cost Estimate:**
 - Development: ~$15-20/month
-- Production: ~$40-50/month (usage-based pricing)
+- Production: ~$40-50/month
 
-### Docker Compose (Local/Self-Hosted)
+See [Railway Step-by-Step Guide](docs/deployment/RAILWAY-STEP-BY-STEP.md) for detailed instructions.
+
+### Docker Compose (Self-Hosted)
 
 ```bash
 # Production deployment
@@ -247,123 +276,77 @@ docker-compose --profile production up -d
 FRONTEND_PORT=8080 docker-compose up -d
 ```
 
-### Alternative Platforms
+## CSV Upload Format
 
-- **Render**: Good free tier for testing ([Render Guide](https://render.com))
-- **DigitalOcean App Platform**: Best for enterprise scale (starts at $75/month)
-- **Self-Hosted**: DigitalOcean Droplet or AWS EC2 for maximum control ($6-12/month)
+### Required Columns
+| Column | Description |
+|--------|-------------|
+| `supplier` | Supplier name |
+| `category` | Category name |
+| `amount` | Transaction amount |
+| `date` | Transaction date (YYYY-MM-DD) |
 
-## 🧪 Testing
+### Optional Columns
+| Column | Description |
+|--------|-------------|
+| `description` | Transaction description |
+| `subcategory` | Subcategory |
+| `location` | Location |
+| `fiscal_year` | Fiscal year |
+| `spend_band` | Spend band |
+| `payment_method` | Payment method |
+| `invoice_number` | Invoice number |
 
-```bash
-# Backend tests
-cd backend
-python manage.py test
+## Documentation
 
-# Frontend tests
-cd frontend
-pnpm test
-```
+| Document | Description |
+|----------|-------------|
+| [Quick Start Guide](docs/setup/QUICK_START_GUIDE.md) | Fast setup for development |
+| [Windows Setup](docs/setup/WINDOWS-SETUP.md) | Windows-specific instructions |
+| [Docker Troubleshooting](docs/setup/DOCKER-TROUBLESHOOTING.md) | Common issues and solutions |
+| [Railway Deployment](docs/deployment/RAILWAY-STEP-BY-STEP.md) | Production deployment guide |
+| [Development Guide](docs/development/CLAUDE.md) | AI assistant guidelines |
 
-## 📝 CSV Upload Format
-
-Required columns:
-- `supplier` - Supplier name
-- `category` - Category name
-- `amount` - Transaction amount
-- `date` - Transaction date (YYYY-MM-DD)
-
-Optional columns:
-- `description` - Transaction description
-- `subcategory` - Subcategory
-- `location` - Location
-- `fiscal_year` - Fiscal year
-- `spend_band` - Spend band
-- `payment_method` - Payment method
-- `invoice_number` - Invoice number
-
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Database Connection Issues
 ```bash
-# Check database is running
 docker-compose ps db
-
-# Check database logs
 docker-compose logs db
-
-# Restart database
 docker-compose restart db
 ```
 
 ### Backend Issues
 ```bash
-# Check backend logs
 docker-compose logs backend
-
-# Restart backend
 docker-compose restart backend
-
-# Run migrations
 docker-compose exec backend python manage.py migrate
 ```
 
 ### Frontend Issues
 ```bash
-# Check frontend logs
 docker-compose logs frontend
-
-# Rebuild frontend
 docker-compose up -d --build frontend
 ```
 
-## 📖 Documentation
+## Contributing
 
-### Essential Guides
-- [Quick Start Guide](docs/setup/QUICK_START_GUIDE.md) - Fast setup for development
-- [Windows Setup](docs/setup/WINDOWS-SETUP.md) - Windows-specific instructions
-- [Docker Troubleshooting](docs/setup/DOCKER-TROUBLESHOOTING.md) - Common issues and solutions
-- [Development Guide](docs/development/CLAUDE.md) - AI assistant guidelines for this codebase
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Deployment
-- [Railway Step-by-Step Guide](docs/deployment/RAILWAY-STEP-BY-STEP.md) - Detailed deployment walkthrough ⭐ **START HERE**
-- [Railway Quick Reference](docs/deployment/RAILWAY.md) - Quick reference for experienced users
+## License
 
-### Interactive Documentation
-- [API Documentation](http://localhost:8001/api/docs) - Interactive API docs
-- [Django Admin](http://localhost:8001/admin) - Custom branded admin interface
+Proprietary - All rights reserved. See [LICENSE](LICENSE) for details.
 
-### More Documentation
-See the [docs/](docs/) directory for all documentation organized by category.
+## Credits
 
-## 🎨 Customizations
+Built with Django, React, PostgreSQL, and Docker by [Defoxx Analytics](https://github.com/DefoxxAnalytics).
 
-### Django Admin Panel
-- **Custom Branding**: Navy blue theme (#1e3a8a) with Versatex logo
-- **Custom Templates**:
-  - `templates/admin/login.html` - Branded login page with centered card design
-  - `templates/admin/base_site.html` - Custom header with logo and navy blue theme
-  - `templates/admin/index.html` - Custom dashboard with welcome banner
-- **Timezone**: Set to EST (America/New_York) for all admin timestamps
-- **Logout Behavior**: Redirects to admin login page instead of default
+---
 
-### Frontend
-- **Login Page**: Versatex logo displayed prominently (replaced Lock icon)
-- **Admin Access**: Shield icon link to Django Admin Panel (visible only to admin users)
-- **Port Configuration**: Backend runs on port 8001 to avoid conflicts
-
-## 🤝 Support
-
-For issues or questions:
-1. Check the troubleshooting section
-2. Review API documentation
-3. Check Docker logs
-4. Contact support
-
-## 📄 License
-
-Proprietary - All rights reserved
-
-## 🎉 Credits
-
-Built with Django, React, PostgreSQL, and Docker.
+<p align="center">
+  <sub>Made with care by the Versatex team</sub>
+</p>

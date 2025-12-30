@@ -13,6 +13,7 @@ build/
 # Django
 backend/staticfiles/
 backend/media/
+backend/logs/
 *.sqlite3
 db.sqlite3
 

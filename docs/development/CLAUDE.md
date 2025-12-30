@@ -1,6 +1,6 @@
-# Analytics Dashboard - Development Guide
+# Versatex Analytics - Development Guide
 
-This document provides detailed technical information for developers working on the Analytics Dashboard project.
+This document provides detailed technical information for developers working on Versatex Analytics.
 
 ## Project Structure
 

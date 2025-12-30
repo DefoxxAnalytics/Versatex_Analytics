@@ -66,7 +66,7 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating transactions"""
     supplier_name = serializers.CharField(write_only=True, required=False)
     category_name = serializers.CharField(write_only=True, required=False)
-    
+
     class Meta:
         model = Transaction
         fields = [
@@ -74,7 +74,29 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
             'amount', 'date', 'description', 'subcategory', 'location',
             'fiscal_year', 'spend_band', 'payment_method', 'invoice_number'
         ]
-    
+
+    def validate_supplier(self, value):
+        """Ensure supplier belongs to user's organization"""
+        if value is None:
+            return value
+        user_org = self.context['request'].user.profile.organization
+        if value.organization_id != user_org.id:
+            raise serializers.ValidationError(
+                "Supplier does not belong to your organization"
+            )
+        return value
+
+    def validate_category(self, value):
+        """Ensure category belongs to user's organization"""
+        if value is None:
+            return value
+        user_org = self.context['request'].user.profile.organization
+        if value.organization_id != user_org.id:
+            raise serializers.ValidationError(
+                "Category does not belong to your organization"
+            )
+        return value
+
     def create(self, validated_data):
         # Get organization from context
         organization = self.context['request'].user.profile.organization

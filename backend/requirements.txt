@@ -33,6 +33,16 @@ whitenoise==6.6.0
 celery==5.3.4
 redis==5.0.1
 
+# Rate Limiting
+django-ratelimit==4.1.0
+
+# Security - File Type Validation (optional, falls back to extension check)
+# python-magic==0.4.27
+
+# Security - Encrypted Fields (optional, enable if FIELD_ENCRYPTION_KEY is set)
+# django-encrypted-model-fields==0.6.5
+# cryptography>=41.0.0
+
 # Development
 django-extensions==3.2.3
 ipython==8.20.0

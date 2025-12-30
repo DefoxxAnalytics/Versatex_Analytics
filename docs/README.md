@@ -1,4 +1,4 @@
-# Documentation Directory
+# Versatex Analytics Documentation
 
 This directory contains all project documentation organized by category.
 
@@ -31,7 +31,7 @@ Historical documentation and completed fixes (kept for reference).
 
 - **Main README**: [../README.md](../README.md) - Project overview and primary documentation
 - **Getting Started**: [setup/QUICK_START_GUIDE.md](setup/QUICK_START_GUIDE.md)
-- **Deploy to Production**: [deployment/RAILWAY-STEP-BY-STEP.md](deployment/RAILWAY-STEP-BY-STEP.md) ⭐ **START HERE**
+- **Deploy to Production**: [deployment/RAILWAY-STEP-BY-STEP.md](deployment/RAILWAY-STEP-BY-STEP.md)
 - **Troubleshooting**: [setup/DOCKER-TROUBLESHOOTING.md](setup/DOCKER-TROUBLESHOOTING.md)
 
 ## Contributing

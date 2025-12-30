@@ -3,16 +3,43 @@ Django settings for Analytics Dashboard
 """
 
 import os
+import sys
+import logging
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
-DEBUG = config('DEBUG', default=True, cast=bool)
+# Security - CRITICAL: No default SECRET_KEY
+def get_secret_key():
+    """Get SECRET_KEY from environment, raise error if not set in production."""
+    key = config('SECRET_KEY', default='')
+    if not key:
+        # Allow insecure key only in development with explicit DEBUG=True
+        if config('DEBUG', default=False, cast=bool):
+            logging.warning(
+                "⚠️  Using insecure SECRET_KEY for development. "
+                "Set SECRET_KEY environment variable for production!"
+            )
+            return 'django-insecure-dev-only-key-do-not-use-in-production'
+        raise ImproperlyConfigured(
+            "SECRET_KEY environment variable is required in production. "
+            "Generate one with: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+        )
+    return key
+
+SECRET_KEY = get_secret_key()
+
+# CRITICAL: DEBUG defaults to False for security
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+# Warn if DEBUG is True in a production-like environment
+if DEBUG and 'runserver' not in sys.argv:
+    logging.warning("⚠️  DEBUG=True detected outside of development server!")
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 # Application definition
@@ -23,14 +50,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third party
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_filters',
     'drf_spectacular',
-    
+
     # Local apps
     'apps.authentication',
     'apps.procurement',
@@ -84,7 +112,7 @@ DATABASES = {
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 'OPTIONS': {'min_length': 8}},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 'OPTIONS': {'min_length': 10}},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
@@ -115,6 +143,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# File upload limits
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -137,22 +169,34 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',
+        'user': '1000/hour',
+    },
+    'EXCEPTION_HANDLER': 'config.exception_handler.custom_exception_handler',
 }
 
-# JWT Settings
+# JWT Settings - Reduced token lifetime for security
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Reduced from 1 hour
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Reduced from 7 days
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'UPDATE_LAST_LOGIN': True,
 }
 
-# CORS Settings
+# CORS Settings - Stricter configuration
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost,http://localhost:3000,http://localhost:5173,http://localhost:8080'
+    default='http://localhost:3000,http://localhost:5173'
 ).split(',')
+
+# Only allow credentials with explicit origin whitelist (not wildcards)
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -168,9 +212,17 @@ CORS_ALLOW_HEADERS = [
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://localhost,http://localhost:3000,http://localhost:5173,http://localhost:8080'
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost:3000,http://localhost:5173'
 ).split(',')
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Session Security
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Email Configuration
 EMAIL_BACKEND = config(
@@ -195,17 +247,74 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
 }
 
-# Security Settings (Production)
+# Security Settings - Always applied (not just in production)
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+
+# Production Security Settings
 if not DEBUG:
+    # HTTPS enforcement
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # HSTS - enforce HTTPS for 1 year
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Referrer policy
+    SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+    # Prevent clickjacking
     X_FRAME_OPTIONS = 'DENY'
 
 # Admin Site Configuration
-LOGOUT_REDIRECT_URL = '/admin/login/'
+ADMIN_URL = config('ADMIN_URL', default='admin/')  # Can be customized via env
+LOGOUT_REDIRECT_URL = f'/{ADMIN_URL}login/'
 
 # Frontend URL for "View Site" link in admin
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+
+# Field Encryption (optional - for django-encrypted-model-fields)
+# Generate key with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY', default='')
+
+# Logging configuration for security events
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'security_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'security.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['console', 'security_file'] if not DEBUG else ['console'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'authentication': {
+            'handlers': ['console', 'security_file'] if not DEBUG else ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+# Create logs directory if it doesn't exist
+(BASE_DIR / 'logs').mkdir(exist_ok=True)

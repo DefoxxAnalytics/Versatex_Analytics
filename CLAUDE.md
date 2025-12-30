@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Analytics Dashboard - A full-stack procurement analytics application with organization-based multi-tenancy.
+Versatex Analytics - An enterprise-grade procurement analytics platform with organization-based multi-tenancy.
 
 **Tech Stack:**
 - Backend: Django 5.0 + Django REST Framework + PostgreSQL + Celery/Redis
@@ -126,10 +126,12 @@ src/
 ### API Structure
 
 ```
-/api/auth/          # login, register, logout, token/refresh, user
-/api/procurement/   # suppliers, categories, transactions (CRUD + upload_csv, bulk_delete, export)
-/api/analytics/     # overview, spend-by-category, pareto, tail-spend, etc.
+/api/v1/auth/          # login, register, logout, token/refresh, user
+/api/v1/procurement/   # suppliers, categories, transactions (CRUD + upload_csv, bulk_delete, export)
+/api/v1/analytics/     # overview, spend-by-category, pareto, tail-spend, etc.
 ```
+
+Legacy endpoints (`/api/auth/`, `/api/procurement/`, `/api/analytics/`) are supported for backwards compatibility.
 
 ## Port Configuration
 
