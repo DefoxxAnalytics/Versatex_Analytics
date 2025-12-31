@@ -69,7 +69,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#1e3a8a] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Login Card */}
         <Card className="border-0 shadow-2xl">
@@ -143,7 +143,7 @@ export default function Login() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-12 text-base bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                className="w-full h-12 text-base bg-[#1e3a8a] hover:bg-[#1e40af] shadow-[0_4px_12px_rgba(30,58,138,0.4)]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -170,7 +170,7 @@ export default function Login() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-white/70 mt-6">
           Protected by JWT authentication
         </p>
       </div>

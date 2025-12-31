@@ -338,6 +338,24 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
 FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY', default='')
 
 # Logging configuration for security events
+# Build handlers dict - only include file handler in production
+_logging_handlers = {
+    'console': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'verbose',
+    },
+}
+
+# Only add file handlers in production (non-DEBUG mode)
+if not DEBUG:
+    # Create logs directory if it doesn't exist
+    (BASE_DIR / 'logs').mkdir(exist_ok=True)
+    _logging_handlers['security_file'] = {
+        'class': 'logging.FileHandler',
+        'filename': BASE_DIR / 'logs' / 'security.log',
+        'formatter': 'verbose',
+    }
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -347,17 +365,7 @@ LOGGING = {
             'style': '{',
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'security_file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'security.log',
-            'formatter': 'verbose',
-        },
-    },
+    'handlers': _logging_handlers,
     'loggers': {
         'django.security': {
             'handlers': ['console', 'security_file'] if not DEBUG else ['console'],
@@ -371,9 +379,6 @@ LOGGING = {
         },
     },
 }
-
-# Create logs directory if it doesn't exist
-(BASE_DIR / 'logs').mkdir(exist_ok=True)
 
 # =============================================================================
 # PRODUCTION SECURITY VALIDATION

@@ -241,17 +241,17 @@ function UserDisplay() {
   };
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200">
+    <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-900/50 border border-blue-700">
       {/* Avatar */}
       <Avatar className="h-8 w-8">
-        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-semibold">
+        <AvatarFallback className="bg-white text-[#1e3a8a] text-sm font-semibold">
           {userInfo.initials}
         </AvatarFallback>
       </Avatar>
 
       {/* Name and Role - Hidden on small screens */}
       <div className="hidden md:flex md:flex-col md:gap-0.5">
-        <span className="text-sm font-medium text-gray-900 leading-tight">
+        <span className="text-sm font-medium text-white leading-tight">
           {userInfo.displayName}
         </span>
         <Badge
@@ -274,7 +274,7 @@ function LogoutButton() {
   return (
     <button
       onClick={logout}
-      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 rounded-md transition-colors"
       title="Logout"
     >
       <LogOut className="h-4 w-4" />
@@ -332,16 +332,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b shadow-sm sticky top-0 z-40">
+      {/* Header - Navy theme matching admin panel */}
+      <header className="bg-[#1e3a8a] border-b border-blue-900 shadow-lg sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img 
-              src="/vtx_logo2.png" 
-              alt="Versatex Logo" 
-              className="h-10 w-auto"
+            <img
+              src="/vtx_logo2.png"
+              alt="Versatex Logo"
+              className="h-10 w-auto brightness-0 invert"
             />
-            <h1 className="text-xl font-bold text-gray-900">Analytics Dashboard</h1>
+            <h1 className="text-xl font-bold text-white">Analytics Dashboard</h1>
           </div>
 
           <div className="flex items-center gap-2">
@@ -354,7 +354,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Filter pane toggle */}
             <button
               onClick={() => setIsFilterPaneOpen(!isFilterPaneOpen)}
-              className="p-2 rounded-md hover:bg-gray-100"
+              className="p-2 rounded-md hover:bg-blue-700 text-white"
               aria-label="Toggle filters"
               aria-expanded={isFilterPaneOpen}
               title="Toggle filter pane"
@@ -365,7 +365,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Mobile menu toggle */}
             <button
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+              className="lg:hidden p-2 rounded-md hover:bg-blue-700 text-white"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
@@ -381,11 +381,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </header>
 
       <div className="flex">
-        {/* Sidebar Navigation */}
+        {/* Sidebar Navigation - Navy theme */}
         <aside
           id="mobile-navigation"
           className={cn(
-            'fixed lg:sticky top-[73px] left-0 h-[calc(100vh-73px)] w-64 bg-white border-r',
+            'fixed lg:sticky top-[73px] left-0 h-[calc(100vh-73px)] w-64 bg-[#1e3a8a] border-r border-blue-900',
             'overflow-y-auto transition-transform duration-200 z-30',
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           )}
@@ -405,11 +405,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     {/* Divider with label */}
                     <div className="pt-4 pb-2">
                       <div className="flex items-center gap-2 px-3 mb-3">
-                        <Separator className="flex-1" />
-                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <Separator className="flex-1 bg-white/20" />
+                        <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
                           Administration
                         </span>
-                        <Separator className="flex-1" />
+                        <Separator className="flex-1 bg-white/20" />
                       </div>
                     </div>
 
@@ -420,12 +420,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       rel="noopener noreferrer"
                       className={cn(
                         'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                        'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
-                        'text-gray-700 hover:text-gray-900'
+                        'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50',
+                        'text-white/80 hover:text-white'
                       )}
                       title="Django Admin Panel (admins only)"
                     >
-                      <Shield className="h-5 w-5 text-gray-500" />
+                      <Shield className="h-5 w-5 text-white/70" />
                       <span className="text-sm">Admin Panel</span>
                     </a>
 
@@ -435,15 +435,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       onClick={handleNavClick}
                       className={cn(
                         'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                        'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50',
                         active
-                          ? 'bg-blue-50 text-blue-700 font-medium'
-                          : 'text-gray-700 hover:text-gray-900'
+                          ? 'bg-white/20 text-white font-medium'
+                          : 'text-white/80 hover:text-white'
                       )}
                       aria-current={active ? 'page' : undefined}
                       title={item.description}
                     >
-                      <Icon className={cn('h-5 w-5', active ? 'text-blue-600' : 'text-gray-500')} />
+                      <Icon className={cn('h-5 w-5', active ? 'text-white' : 'text-white/70')} />
                       <span className="text-sm">{item.label}</span>
                     </Link>
                   </div>
@@ -457,11 +457,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     {/* Divider with label */}
                     <div className="pt-4 pb-2">
                       <div className="flex items-center gap-2 px-3 mb-3">
-                        <Separator className="flex-1" />
-                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <Separator className="flex-1 bg-white/20" />
+                        <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
                           Settings
                         </span>
-                        <Separator className="flex-1" />
+                        <Separator className="flex-1 bg-white/20" />
                       </div>
                     </div>
 
@@ -471,15 +471,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       onClick={handleNavClick}
                       className={cn(
                         'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                        'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50',
                         active
-                          ? 'bg-blue-50 text-blue-700 font-medium'
-                          : 'text-gray-700 hover:text-gray-900'
+                          ? 'bg-white/20 text-white font-medium'
+                          : 'text-white/80 hover:text-white'
                       )}
                       aria-current={active ? 'page' : undefined}
                       title={item.description}
                     >
-                      <Icon className={cn('h-5 w-5', active ? 'text-blue-600' : 'text-gray-500')} />
+                      <Icon className={cn('h-5 w-5', active ? 'text-white' : 'text-white/70')} />
                       <span className="text-sm">{item.label}</span>
                     </Link>
                   </div>
@@ -493,15 +493,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   onClick={handleNavClick}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                    'hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                    'hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50',
                     active
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'text-gray-700 hover:text-gray-900'
+                      ? 'bg-white/20 text-white font-medium'
+                      : 'text-white/80 hover:text-white'
                   )}
                   aria-current={active ? 'page' : undefined}
                   title={item.description}
                 >
-                  <Icon className={cn('h-5 w-5', active ? 'text-blue-600' : 'text-gray-500')} />
+                  <Icon className={cn('h-5 w-5', active ? 'text-white' : 'text-white/70')} />
                   <span className="text-sm">{item.label}</span>
                 </Link>
               );
